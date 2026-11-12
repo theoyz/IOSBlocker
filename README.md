@@ -9,6 +9,66 @@ anything.
 
 **[⬇️ Install / view raw script](https://raw.githubusercontent.com/theoyz/IOSBlocker/main/spoiler-blocker.user.js)**
 
+## Install
+
+### iPad / iPhone (Safari + Userscripts app)
+
+**1. Install the app and choose a scripts folder**
+
+1. Install [Userscripts](https://apps.apple.com/app/userscripts/id1463298887)
+   (free) from the App Store.
+2. Open the Userscripts app and tap **Set Userscripts Directory** (or
+   **Change Save Location**).
+3. Pick or create a folder in the Files app, for example
+   **iCloud Drive → Userscripts** or **On My iPad → Userscripts**. This is the
+   folder the app reads scripts from. Every script you want to run goes
+   directly into this folder, not into a subfolder.
+
+**2. Turn the extension on in Safari**
+
+1. Open **Settings → Apps → Safari → Extensions → Userscripts**.
+2. Turn on **Allow Extension**.
+3. Under website permissions, set **youtube.com** and **reddit.com** to
+   **Allow**. "Allow" on all websites works too.
+
+**3. Add the script to the folder.** Choose one of these:
+
+- **From Safari (easiest):** open the
+  [raw script](https://raw.githubusercontent.com/theoyz/IOSBlocker/main/spoiler-blocker.user.js) in Safari, tap the **puzzle-piece / ᴀA** button in the
+  address bar, then **Userscripts**, and tap **Install**. The app saves
+  `spoiler-blocker.user.js` into your scripts folder for you.
+- **By hand with the Files app:** download
+  [`spoiler-blocker.user.js`](https://raw.githubusercontent.com/theoyz/IOSBlocker/main/spoiler-blocker.user.js) (long-press the link → **Download
+  Linked File**). Open the **Files** app, go to **Downloads**, and move the
+  file into the scripts folder you picked in step 1, for example
+  **iCloud Drive → Userscripts**. The file name must end in **`.user.js`**.
+  If Safari saved it as `….user.js.txt`, rename it and remove the `.txt`.
+
+Your folder should then look like this:
+
+```
+iCloud Drive
+└── Userscripts                  ← the folder chosen in the Userscripts app
+    └── spoiler-blocker.user.js
+```
+
+**4. Try it.** Reload YouTube or Reddit in Safari. The 🛡️ button appears in
+the bottom right corner.
+
+### Desktop (Tampermonkey, Violentmonkey, …)
+
+1. Install the Tampermonkey extension for your browser.
+2. Open the [raw script](https://raw.githubusercontent.com/theoyz/IOSBlocker/main/spoiler-blocker.user.js).
+3. Click **Install**. Tampermonkey stores the script itself, so there's no
+   folder to pick.
+
+### Updates
+
+The script declares `@updateURL` and `@downloadURL`, so script managers that
+support them pick up new versions from this repo automatically. In the
+Userscripts app, use its "check for updates" option, or replace the file in
+your scripts folder with the new one.
+
 ## Features
 
 **Everywhere**
@@ -44,32 +104,6 @@ anything.
 - An "On this page" card lets you block or always-allow the current channel,
   subreddit or user with one tap.
 - Export and import your config as JSON.
-
-## Install
-
-### iPad / iPhone (Safari)
-
-1. Install **Userscripts** from the App Store.
-2. Open the app and pick a folder for your scripts.
-3. Go to **Settings → Apps → Safari → Extensions → Userscripts**, turn it on and
-   allow it on **youtube.com** and **reddit.com**. "Always allow" works best.
-4. Save [`spoiler-blocker.user.js`](https://raw.githubusercontent.com/theoyz/IOSBlocker/main/spoiler-blocker.user.js)
-   into that scripts folder. You can also open the raw link in Safari, tap the
-   Userscripts extension icon and install it from there.
-5. Reload YouTube or Reddit in Safari. The 🛡️ button appears in the bottom
-   right.
-
-### Desktop (Tampermonkey, Violentmonkey, …)
-
-1. Install the Tampermonkey extension for your browser.
-2. Open the [raw script](https://raw.githubusercontent.com/theoyz/IOSBlocker/main/spoiler-blocker.user.js).
-3. Click **Install**.
-
-### Updates
-
-The script declares `@updateURL` and `@downloadURL`, so script managers that
-support them pick up new versions from this repo automatically. In the
-Userscripts app, use its "check for updates" option.
 
 ## Usage
 
