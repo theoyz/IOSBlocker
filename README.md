@@ -181,12 +181,18 @@ npm install
 npm test
 ```
 
-- `run.js` covers the YouTube feed: keyword matching, channels, allow list,
-  comments, Shorts and dynamically added items.
-- `run2.js` covers Reddit: new and old Reddit posts, subreddits, users,
-  comments, the post-page block screen and the site switch.
-- `run3.js` covers YouTube page blocking, the settings panel, export/import
-  and config sanitizing.
+- `run.js` covers Reddit (feed, sidebar links, post and subreddit block
+  screens, title protection, new and old Reddit comments, the panel's quick
+  actions) and a YouTube feed check, including the allow list.
+- `run2.js` covers the settings panel on YouTube: CSS injection when
+  `GM.addStyle` fails (Trusted Types), card order, and the per-site on/off
+  switch hiding and unhiding videos.
+- `run3.js` covers the YouTube player: end screens, the fullscreen grid,
+  unknown card types, the "Up next" card and the autoplay cancel.
+
+Each test uses `../spoiler-blocker.user.js` by default. To test another file,
+pass its path: `node run.js path/to/script.user.js`. A failing check prints
+`FAIL` and makes `npm test` exit non-zero.
 
 ### Releasing
 
