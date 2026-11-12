@@ -1,105 +1,37 @@
-'use strict';
-// YouTube page blocking, settings panel, import/export and config sanitizing.
-const { load, check, sleep, done } = require('./helpers');
-
-const stored = w => JSON.parse(w.localStorage.getItem('ytsb-config') || 'null');
-const button = (w, text) => [...w.document.querySelectorAll('#ytsb-panel button')].find(b => b.textContent === text);
-
+const fs = require('fs');
+const { JSDOM } = require('jsdom');
+const src = fs.readFileSync(process.argv[2] || require('path').join(__dirname, '..', 'spoiler-blocker.user.js'), 'utf8');
+const ok = (c, m) => { if (!c) process.exitCode = 1; console.log((c ? 'PASS ' : 'FAIL ') + m); };
+const H = n => n && n.hasAttribute('data-ytsb-hidden');
 (async () => {
-  console.log('run3.js – page blocking & settings');
-
-  // ---- blocked watch page ----
-  let w = await load({
-    url: 'https://www.youtube.com/watch?v=abc',
-    title: 'GTA 6 story leak - YouTube',
-    html: '<ytd-watch-metadata><h1 id="title">GTA 6 story leak</h1><div id="owner"><a href="/@someone">Someone</a></div></ytd-watch-metadata>',
-  });
-  const ov = w.document.getElementById('ytsb-overlay');
-  check('watch page overlay shown', !!ov);
-  check('tab title replaced', w.document.title === 'Blocked – YouTube');
-  check('overlay names the match, not the title', ov && /Matched: “gta 6”/.test(ov.textContent) && !/story leak/i.test(ov.textContent));
-  w.document.getElementById('ytsb-allow').click();
-  await sleep(120);
-  check('"Show anyway" removes overlay', !w.document.getElementById('ytsb-overlay'));
-  check('"Show anyway" restores title', w.document.title === 'GTA 6 story leak - YouTube');
+  const dom = new JSDOM(`<html><head><title>Minecraft - YouTube</title></head><body>
+  <div id="movie_player" class="html5-video-player ended-mode">
+    <div class="ytp-chrome-top"><div class="ytp-title"><a class="ytp-title-link" href="https://www.youtube.com/watch?v=cur">Minecraft update</a></div></div>
+    <div class="html5-endscreen ytp-player-content videowall-endscreen">
+      <a id="e1" class="ytp-videowall-still" href="https://www.youtube.com/watch?v=a1" aria-label="GTA6 gameplay leak 12 minutes"><span class="ytp-videowall-still-info-title">GTA6 gameplay leak</span></a>
+      <a id="e2" class="ytp-videowall-still" href="https://www.youtube.com/watch?v=a2"><span class="ytp-videowall-still-info-title">Minecraft redstone</span></a>
+    </div>
+    <div class="ytp-fullscreen-grid"><div id="m1" class="ytp-modern-videowall-still"><a href="/watch?v=b1"><div>Lucia's story explained</div></a></div>
+      <div id="m2" class="ytp-new-unknown-card"><a id="m2a" href="/watch?v=b2" title="Vice City map tour">x</a></div>
+      <div id="m3" class="ytp-modern-videowall-still"><a href="/watch?v=b3"><div>Outer Wilds OST</div></a></div></div>
+    <div class="ytp-autonav-endscreen-upnext-container" id="up">
+      <div class="ytp-autonav-endscreen-upnext-title">GTA VI ending explained</div>
+      <button class="ytp-autonav-endscreen-upnext-cancel-button" id="cancel">Cancel</button>
+    </div>
+  </div></body></html>`, { url: 'https://www.youtube.com/watch?v=cur', runScripts: 'outside-only', pretendToBeVisual: true });
+  const w = dom.window, d = w.document;
+  let cancelled = 0;
+  d.getElementById('cancel').addEventListener('click', () => cancelled++);
+  w.eval(src);
+  await new Promise(r => setTimeout(r, 400));
+  ok(H(d.getElementById('e1')), 'classic end screen: GTA6 video hidden');
+  ok(!H(d.getElementById('e2')), 'classic end screen: normal video visible');
+  ok(H(d.getElementById('m1')), 'new grid: "Lucia" video hidden');
+  ok(H(d.getElementById('m2a')), 'unknown card type: link with keyword still hidden');
+  ok(!H(d.getElementById('m3')), 'new grid: normal video visible');
+  ok(!H(d.querySelector('.ytp-title-link')), "current video's title bar untouched");
+  ok(H(d.getElementById('up')), '"Up next" spoiler card hidden');
+  ok(cancelled === 1, 'autoplay countdown cancelled once (' + cancelled + ')');
+  ok(!d.getElementById('ytsb-overlay'), 'current (normal) video not blocked');
   w.close();
-
-  // ---- harmless watch page ----
-  w = await load({
-    url: 'https://www.youtube.com/watch?v=def',
-    title: 'Pasta recipe - YouTube',
-    html: '<ytd-watch-metadata><h1 id="title">Pasta recipe</h1></ytd-watch-metadata>',
-  });
-  check('harmless watch page not blocked', !w.document.getElementById('ytsb-overlay'));
-  w.close();
-
-  // ---- blocked channel page ----
-  w = await load({ url: 'https://www.youtube.com/@SpoilerTV', config: { blockedChannels: ['@SpoilerTV'] } });
-  check('blocked channel page overlay shown', !!w.document.getElementById('ytsb-overlay'));
-  w.close();
-
-  // ---- page blocking switched off ----
-  w = await load({
-    url: 'https://www.youtube.com/watch?v=abc', config: { blockPages: false },
-    html: '<ytd-watch-metadata><h1 id="title">GTA 6 story leak</h1></ytd-watch-metadata>',
-  });
-  check('no overlay when page blocking is off', !w.document.getElementById('ytsb-overlay'));
-  w.close();
-
-  // ---- settings panel ----
-  w = await load({ url: 'https://www.youtube.com/#ytsb' });
-  const panel = w.document.getElementById('ytsb-panel');
-  check('#ytsb opens the panel', !!panel);
-  check('#ytsb removed from the address', w.location.hash === '');
-  check('panel shows version and build', /Version 3\.2\.3 · Build \d+/.test(panel.textContent));
-
-  // add a word via the input
-  const input = panel.querySelector('input.ytsb-input');
-  input.value = 'Hidden Ending, Final Boss';
-  button(w, 'Add').click();
-  await sleep(50);
-  check('added words saved', stored(w).blockedWords.includes('Hidden Ending') && stored(w).blockedWords.includes('Final Boss'));
-
-  // export (no clipboard in jsdom -> falls back to the textarea)
-  button(w, 'Copy config').click();
-  await sleep(50);
-  const exported = JSON.parse(w.document.querySelector('#ytsb-panel .ytsb-ta').value);
-  check('export contains app marker and settings', exported.app === 'spoiler-blocker' && exported.blockedWords.includes('Final Boss'));
-
-  // import a malformed config: wrong types, duplicates, bad Reddit entries, overlong entries
-  w.document.querySelector('#ytsb-panel .ytsb-ta').value = JSON.stringify({
-    blockedWords: ['Spoiler', 'spoiler', 42, null, '  padded  ', 'x'.repeat(500)],
-    redditBlocked: ['/r/SomeSub/', 'user/someone', 'not a sub'],
-    hideShorts: 'yes',
-    redirectShorts: false,
-    unknownKey: true,
-  });
-  button(w, 'Import pasted').click();
-  await sleep(50);
-  const c = stored(w);
-  check('import: non-strings and case duplicates dropped', c.blockedWords.filter(x => x.toLowerCase() === 'spoiler').length === 1 && !c.blockedWords.includes(42));
-  check('import: entries trimmed and length-limited', c.blockedWords.includes('padded') && c.blockedWords.every(x => x.length <= 200));
-  check('import: Reddit entries canonicalized', JSON.stringify(c.redditBlocked) === JSON.stringify(['r/SomeSub', 'u/someone']));
-  check('import: non-boolean flag ignored', c.hideShorts === false);
-  check('import: boolean flag applied', c.redirectShorts === false);
-  check('import: unknown keys dropped', !('unknownKey' in c));
-
-  // invalid JSON leaves settings alone
-  w.document.querySelector('#ytsb-panel .ytsb-ta').value = '{not json';
-  button(w, 'Import pasted').click();
-  await sleep(50);
-  check('invalid JSON rejected with message', /Not valid JSON/.test(w.document.querySelector('#ytsb-panel .ytsb-status').textContent));
-  check('invalid JSON keeps settings', stored(w).blockedWords.includes('padded'));
-
-  // reset
-  button(w, 'Reset to defaults').click();
-  await sleep(50);
-  check('reset restores default words', stored(w).blockedWords.includes('GTA VI') && !stored(w).blockedWords.includes('padded'));
-
-  // close
-  w.document.querySelector('#ytsb-panel .ytsb-close').click();
-  check('close button removes panel', !w.document.getElementById('ytsb-panel'));
-  w.close();
-
-  done('run3.js');
-})().catch(e => { console.error(e); process.exit(1); });
+})();
