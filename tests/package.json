@@ -1,0 +1,12 @@
+{
+  "name": "spoiler-blocker-tests",
+  "private": true,
+  "description": "jsdom smoke tests for spoiler-blocker.user.js",
+  "license": "MIT",
+  "scripts": {
+    "test": "node run.js && node run2.js && node run3.js"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0"
+  }
+}
