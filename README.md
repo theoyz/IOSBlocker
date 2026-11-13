@@ -13,47 +13,28 @@ anything.
 
 ### iPad / iPhone (Safari + Userscripts app)
 
-**1. Install the app and choose a scripts folder**
-
 1. Install [Userscripts](https://apps.apple.com/app/userscripts/id1463298887)
-   (free) from the App Store.
-2. Open the Userscripts app and tap **Set Userscripts Directory** (or
-   **Change Save Location**).
-3. Pick or create a folder in the Files app, for example
-   **iCloud Drive → Userscripts** or **On My iPad → Userscripts**. This is the
-   folder the app reads scripts from. Every script you want to run goes
-   directly into this folder, not into a subfolder.
+   (free) from the App Store and open it once.
+2. Turn the extension on: **Settings → Apps → Safari → Extensions →
+   Userscripts**. Turn on **Allow Extension** and allow **youtube.com** and
+   **reddit.com**.
+3. Download [`spoiler-blocker.user.js`](https://raw.githubusercontent.com/theoyz/IOSBlocker/main/spoiler-blocker.user.js): long-press the link →
+   **Download Linked File**.
+4. Open the **Files** app → **Downloads**, long-press
+   `spoiler-blocker.user.js` and tap **Copy**.
+5. In the **Files** app, go to **On My iPhone** (or **On My iPad**) → open the
+   **Userscripts** folder → long-press an empty spot → **Paste**.
+6. Reload YouTube or Reddit in Safari. The 🛡️ button appears in the bottom
+   right corner.
 
-**2. Turn the extension on in Safari**
-
-1. Open **Settings → Apps → Safari → Extensions → Userscripts**.
-2. Turn on **Allow Extension**.
-3. Under website permissions, set **youtube.com** and **reddit.com** to
-   **Allow**. "Allow" on all websites works too.
-
-**3. Add the script to the folder.** Choose one of these:
-
-- **From Safari (easiest):** open the
-  [raw script](https://raw.githubusercontent.com/theoyz/IOSBlocker/main/spoiler-blocker.user.js) in Safari, tap the **puzzle-piece / ᴀA** button in the
-  address bar, then **Userscripts**, and tap **Install**. The app saves
-  `spoiler-blocker.user.js` into your scripts folder for you.
-- **By hand with the Files app:** download
-  [`spoiler-blocker.user.js`](https://raw.githubusercontent.com/theoyz/IOSBlocker/main/spoiler-blocker.user.js) (long-press the link → **Download
-  Linked File**). Open the **Files** app, go to **Downloads**, and move the
-  file into the scripts folder you picked in step 1, for example
-  **iCloud Drive → Userscripts**. The file name must end in **`.user.js`**.
-  If Safari saved it as `….user.js.txt`, rename it and remove the `.txt`.
-
-Your folder should then look like this:
+The file name must end in **`.user.js`**. If it ends in `.txt`, rename it and
+remove the `.txt`.
 
 ```
-iCloud Drive
-└── Userscripts                  ← the folder chosen in the Userscripts app
+On My iPhone / On My iPad
+└── Userscripts
     └── spoiler-blocker.user.js
 ```
-
-**4. Try it.** Reload YouTube or Reddit in Safari. The 🛡️ button appears in
-the bottom right corner.
 
 ### Desktop (Tampermonkey, Violentmonkey, …)
 
