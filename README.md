@@ -1,3 +1,7 @@
+# Vibe coded
+
+But I read it through, so it <ins>should</ins> be safe.
+
 # 🛡️ Spoiler Blocker
 
 A userscript that hides spoilers on **YouTube** and **Reddit**. It's built for
